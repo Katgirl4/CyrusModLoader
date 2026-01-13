@@ -50,7 +50,7 @@ WINEDLLOVERRIDES="winhttp.dll=n,b" %command%
 
 ### Linux
 
-## Windows
+### Windows
 
 # Contributing
 
