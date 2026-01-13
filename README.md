@@ -20,11 +20,11 @@ todo steam overrides
 WINEDLLOVERRIDES="winhttp.dll=n,b" %command%
 ```
 
-### Configure proxy to run
+### Step 2: Configure proxy to run
 
-### Step 2: First time run
+### Step 3: First time run
 
-### Step 3: Configuration
+### Step 4: Configuration
 
 ### Additional Resources
 
