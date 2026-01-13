@@ -72,13 +72,11 @@ class MainWindow(Gtk.Window):
         self.gameDirectoryEntryButton.connect("clicked", self.setGameDirectory)
         self.directoryBox.pack_start(self.gameDirectoryEntryButton, True, True, 0)
         
-        
         modsListLabel = Gtk.Label()
         modsListLabel.set_text("Mods List (TODO)")
         self.gameDirectoryLabel.set_justify(Gtk.Justification.LEFT)
         modsBox.pack_start(modsListLabel, True, True, 0)
 
-    
     def setGameDirectory(self, widget):
         cfg['gameDirectoryString'] = self.gameDirectorySelection.get_text()
         config = open('cfg.json', 'w')
