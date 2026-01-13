@@ -36,6 +36,12 @@ WINEDLLOVERRIDES="winhttp.dll=n,b" %command%
 
 ### Todo
 
+# Using the mod manager
+
+## Linux
+
+## Windows
+
 # Requirements and building
 
 ## Python Modules
