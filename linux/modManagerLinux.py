@@ -46,50 +46,46 @@ class MainWindow(Gtk.Window):
         super().__init__(title="CyrusModManager")
         self.set_border_width(5)
 
-        outerBox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
+        self.outerBox = Gtk.HBox(orientation=Gtk.Orientation.VERTICAL, spacing=6)
     
-        directoryBox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=2)
-        directoryBox.set_homogeneous(False)
+        self.directoryBox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=2)
+        self.directoryBox.set_homogeneous(False)
 
         modsBox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=2)
         modsBox.set_homogeneous(False)
+
+        self.add(self.outerBox)
         
-        outerBox.pack_start(directoryBox, True, True, 0)
-        outerBox.pack_start(modsBox, True, True, 0)
+        self.outerBox.pack_start(self.directoryBox, True, True, 0)
+        self.outerBox.pack_start(modsBox, True, True, 0)
 
-        gameDirectoryLabel = Gtk.Label()
-        gameDirectoryLabel.set_text(f"Game directory: {cfg['gameDirectoryString']}")
-        gameDirectoryLabel.set_justify(Gtk.Justification.LEFT)
-        directoryBox.pack_start(gameDirectoryLabel, True, True, 0)
+        self.gameDirectoryLabel = Gtk.Label()
+        self.gameDirectoryLabel.set_text(f"Game directory: {cfg['gameDirectoryString']}")
+        self.gameDirectoryLabel.set_justify(Gtk.Justification.LEFT)
+        self.directoryBox.pack_start(self.gameDirectoryLabel, True, True, 0)
 
-        gameDirectorySelection = Gtk.Entry()
-        directoryBox.pack_start(gameDirectorySelection, True, True, 0)
+        self.gameDirectorySelection = Gtk.Entry()
+        self.directoryBox.pack_start(self.gameDirectorySelection, True, True, 0)
 
-        gameDirectoryEntryButton = Gtk.Button(label='Button')
-        gameDirectoryEntryButton.connect("clicked", lambda widget: self.setGameDirectory(gameDirectorySelection.get_text()))
-        directoryBox.pack_start(gameDirectoryEntryButton, True, True, 0)
+        self.gameDirectoryEntryButton = Gtk.Button(label='Set Game directory')
+        self.gameDirectoryEntryButton.connect("clicked", self.setGameDirectory)
+        self.directoryBox.pack_start(self.gameDirectoryEntryButton, True, True, 0)
+        
         
         modsListLabel = Gtk.Label()
         modsListLabel.set_text("Mods List (TODO)")
-        gameDirectoryLabel.set_justify(Gtk.Justification.LEFT)
+        self.gameDirectoryLabel.set_justify(Gtk.Justification.LEFT)
         modsBox.pack_start(modsListLabel, True, True, 0)
 
-        self.add(outerBox)
     
     def setGameDirectory(self, widget):
-        cfg['gameDirectoryString'] = widget
+        cfg['gameDirectoryString'] = self.gameDirectorySelection.get_text()
         config = open('cfg.json', 'w')
         json.dump(cfg, config)
         config.close()
-    
-    
-    
-
-
-
-
-
-
+        
+        self.gameDirectoryLabel.set_text(f"Game directory: {cfg['gameDirectoryString']}")
+        self.show_all()
 
 window = MainWindow()
 window.connect("destroy", Gtk.main_quit)
