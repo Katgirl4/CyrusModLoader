@@ -45,6 +45,7 @@ class MainWindow(Gtk.Window):
         
         super().__init__(title="CyrusModManager")
         self.set_border_width(5)
+        self.set_default_size(400,300)
 
         self.outerBox = Gtk.HBox(orientation=Gtk.Orientation.VERTICAL, spacing=6)
     
