@@ -1,4 +1,4 @@
-# CyrusModLoader
+# CyrusModLoader - work in progress
 The (Currently WIP) fan-maintained, semi-official CRDX modloader!
 
 todo
