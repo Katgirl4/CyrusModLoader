@@ -1,7 +1,7 @@
 # CyrusModLoader
-The fan-maintained, semi-official CRDX modloader!
+The (Currently WIP) fan-maintained, semi-official CRDX modloader!
 
-
+todo
 ## Linux BepinEx Install Instructions
 
 ### Step 0: Download and run the install script
@@ -21,10 +21,12 @@ WINEDLLOVERRIDES="winhttp.dll=n,b" %command%
 ```
 
 ### Step 2: Configure proxy to run
-
+todo
 ### Step 3: First time run
+todo
 
 ### Step 4: Configuration
+todo
 
 ### Additional Resources
 
@@ -39,21 +41,29 @@ WINEDLLOVERRIDES="winhttp.dll=n,b" %command%
 # Using the mod manager
 
 ## Linux
+todo
 
 ## Windows
+todo
 
 # Requirements and building
 
 ## Python Modules
+todo
 
 ## Building from source
+todo
 
 ### Linux
+todo
 
 ### Windows
+todo
 
 # Contributing
 
 ## Contributions welcome
+Project is still WIP.
 
 ## No LLMs
+read the title
