@@ -18,13 +18,13 @@ while not config:
         except(json.JSONDecodeError):
             config.close()
             config = open('cfg.json', 'w')
-            json.dump({"None" : "None"}, config)
+            json.dump(boilerplateJSON, config)
             config.close()
             config = open("cfg.json", 'r')
             cfg = json.load(config)
     except(FileNotFoundError):
         config = open('cfg.json', 'w')
-        json.dump({"None" : "None"}, config)
+        json.dump(boilerplateJSON, config)
         config.close()
 
 class MainWindow(Gtk.Window):
