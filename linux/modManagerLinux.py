@@ -6,6 +6,10 @@ from gi.repository import Gtk
 # Open config file when application starts.
     # If config is found, open it. If config is not found, then create a new file and try to open it. (TODO: make it fill blank fields)
 config = None
+boilerplateJSON = {
+    "gameDirectory": "./",
+    "disableDirectory" : "./Disabled"
+    }
 while not config:
     try:
         config = open("cfg.json", 'r')
