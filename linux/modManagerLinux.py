@@ -90,3 +90,9 @@ window = MainWindow()
 window.connect("destroy", Gtk.main_quit)
 window.show_all()
 Gtk.main()
+
+
+# TODO list
+# implement mod disable enable system
+# implement system that checks if the game executable and bepinex exists when the game directory is set, and displays an error popup if it is not
+# implement installer button that downloads and installs the installer script and then runs it, providing further instructions to user in the terminal

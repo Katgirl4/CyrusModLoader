@@ -1,14 +1,11 @@
 import requests, argparse, subprocess, sys, re, string
 from bs4 import *
 
-def parseArgs():
-    parser = argparse.ArgumentParser(description='todo', usage='todo')
-    parser.add_argument('-d', required=True, help='The directory where the game is stored.')
-
-    args = parser.parse_args()
-    return args
-
 def main():
+    # The preliminary setup requires getting the game directory from the user, and checking if it has the game executable in it.
+
+    # TODO
+
 
     # First, the script needs to determine what the latest version of BepinEx is. This will be accomplished by scraping the latest release.
     print("Sending GET request to https://github.com/BepInEx/BepInEx/")
