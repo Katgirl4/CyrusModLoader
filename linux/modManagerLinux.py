@@ -93,6 +93,6 @@ Gtk.main()
 
 
 # TODO list
-# implement mod disable enable system
+# implement mod disable enable system and scanning mod folders every time a change is made, along with a manual rescan mods button
 # implement system that checks if the game executable and bepinex exists when the game directory is set, and displays an error popup if it is not
 # implement installer button that downloads and installs the installer script and then runs it, providing further instructions to user in the terminal
