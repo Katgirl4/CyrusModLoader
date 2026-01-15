@@ -1,4 +1,4 @@
-import json, gi, sys, os, subprocess
+import json, gi, sys, os, subprocess, re, requests
 
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
@@ -17,9 +17,16 @@ def resetConfig(): # Function for resetting the config if it has an error or cre
     'disableDirectoryString' : '~/Disabled/'}, config, indent=4)
     config.close()
 
+# Dict of error messages for the error popup
+global errorMessages
+errorMessages = {
+    "executableNotFound":"Game executable not found in provided game directory.",
+    "bpxNotInstalled":"BepInEx does not appear to be installed in provided game directory."
+}
+
 config = None
 cfg = {}
-while not cfg:
+while not cfg: # Get the config file and reset it if it has errors
     try:
         config = open("cfg.json", 'r')
         try:
@@ -38,7 +45,6 @@ while not cfg:
 
 
 # Main (and only) window (probably).
-
 class MainWindow(Gtk.Window):
     
     def __init__(self):
@@ -102,16 +108,26 @@ class MainWindow(Gtk.Window):
 class InstallerDialog(Gtk.Dialog):
      def __init__(self, parent):
         super().__init__(title="BepInEx Semi-Automated Installer", transient_for=parent, flags=0)
-        self.add_buttons(
-            Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, Gtk.STOCK_OK, Gtk.ResponseType.OK)
+        self.add_buttons(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, Gtk.STOCK_OK, Gtk.ResponseType.OK)
         self.set_default_size(150, 100)
         self.inlabel = Gtk.Label(label="todo")
         self.inbox = self.get_content_area()
         self.inbox.add(self.inlabel)
         self.show_all()
 
+# Dialog for displaying errors to user. Pass it an error type from errorMessages dict and it will display it.
+class ErrorDialog(Gtk.Dialog):
+    def __init__(self, parent, errorType):
+        super().__init__(title="An Error has occured", transient_for=parent, flags=0)
+        self.add_buttons(Gtk.STOCK_OK, Gtk.ResponseType.OK)
+        self.set_default_size(150, 100)
+        self.errorLabel = Gtk.Label(label=errorMessages[errorType])
+        self.errorBox = self.get_content_area()
+        self.errorBox.add(self.errorLabel)
+        self.show_all()
 
-
+def bepInExInstallScript():
+    print("THIS IS A PLACEHOLDER TEST")
 
 window = MainWindow()
 window.connect("destroy", Gtk.main_quit)
