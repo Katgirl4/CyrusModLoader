@@ -1,4 +1,4 @@
-import json, gi, sys, os
+import json, gi, sys, os, subprocess
 
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
@@ -52,13 +52,13 @@ class MainWindow(Gtk.Window):
         self.directoryBox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=2)
         self.directoryBox.set_homogeneous(False)
 
-        modsBox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=2)
-        modsBox.set_homogeneous(False)
+        self.modsBox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=2)
+        self.modsBox.set_homogeneous(False)
 
         self.add(self.outerBox)
         
         self.outerBox.pack_start(self.directoryBox, True, True, 0)
-        self.outerBox.pack_start(modsBox, True, True, 0)
+        self.outerBox.pack_start(self.modsBox, True, True, 0)
 
         self.gameDirectoryLabel = Gtk.Label()
         self.gameDirectoryLabel.set_text(f"Game directory: {cfg['gameDirectoryString']}")
@@ -71,11 +71,15 @@ class MainWindow(Gtk.Window):
         self.gameDirectoryEntryButton = Gtk.Button(label='Set Game directory')
         self.gameDirectoryEntryButton.connect("clicked", self.setGameDirectory)
         self.directoryBox.pack_start(self.gameDirectoryEntryButton, True, True, 0)
-        
-        modsListLabel = Gtk.Label()
-        modsListLabel.set_text("Mods List (TODO)")
+
+        self.installScriptButton = Gtk.Button(label='Download & Install BepInEx')
+        self.installScriptButton.connect("clicked", self.installBepInEx)
+        self.modsBox.pack_start(self.installScriptButton, True, True, 0)
+
+        self.modsListLabel = Gtk.Label()
+        self.modsListLabel.set_text("Mods List (TODO)")
         self.gameDirectoryLabel.set_justify(Gtk.Justification.LEFT)
-        modsBox.pack_start(modsListLabel, True, True, 0)
+        self.modsBox.pack_start(self.modsListLabel, True, True, 0)
 
     def setGameDirectory(self, widget):
         cfg['gameDirectoryString'] = self.gameDirectorySelection.get_text()
@@ -85,6 +89,29 @@ class MainWindow(Gtk.Window):
         
         self.gameDirectoryLabel.set_text(f"Game directory: {cfg['gameDirectoryString']}")
         self.show_all()
+
+    def installBepInEx(self, widget):
+        installerDialog = InstallerDialog(self)
+        runner = installerDialog.run()
+        if runner is Gtk.ResponseType.OK:
+            print("ok")
+        elif runner is Gtk.ResponseType.CANCEL:
+            print("cancel")
+        installerDialog.destroy()
+
+class InstallerDialog(Gtk.Dialog):
+     def __init__(self, parent):
+        super().__init__(title="BepInEx Semi-Automated Installer", transient_for=parent, flags=0)
+        self.add_buttons(
+            Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, Gtk.STOCK_OK, Gtk.ResponseType.OK)
+        self.set_default_size(150, 100)
+        self.inlabel = Gtk.Label(label="todo")
+        self.inbox = self.get_content_area()
+        self.inbox.add(self.inlabel)
+        self.show_all()
+
+
+
 
 window = MainWindow()
 window.connect("destroy", Gtk.main_quit)
