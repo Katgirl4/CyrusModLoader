@@ -1,4 +1,5 @@
-import json, gi, sys, os, subprocess, re, requests
+import json, gi, sys, os, subprocess, re, requests, string, time, threading
+from bs4 import *
 
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
@@ -22,7 +23,12 @@ global errorMessages
 errorMessages = {
     "executableNotFound":"Cannot find \"Contract Rush DX.exe\" in provided game directory! Install of BepInEx aborted.",
     "bpxNotInstalled":"BepInEx does not appear to be installed in provided game directory.",
-    "directoryNotFound":"That directory does not exist! Please input a valid directory. Maybe you forgot an ending \"/\" or a capitalization?"
+    "directoryNotFound":"That directory does not exist! Please input a valid directory. Maybe you forgot an ending \"/\" or a capitalization?",
+    "regexFailure":"RegEx that should always match failed to match!",
+    "cannotFindBPXRepo":"GET request to github.com failed!"
+}
+infoMessages = {
+    "automaticInstallComplete":"askdjhbsajbdajsd"
 }
 
 config = None
@@ -80,8 +86,11 @@ class MainWindow(Gtk.Window):
         self.directoryBox.pack_start(self.gameDirectoryEntryButton, True, True, 0)
 
         self.installScriptButton = Gtk.Button(label='Download & install BepInEx')
-        self.installScriptButton.connect("clicked", self.installBepInEx)
+        self.installScriptButton.connect("clicked", self.startInstall)
         self.modsBox.pack_start(self.installScriptButton, True, True, 0)
+
+        self.installThread = threading.Thread(target=self.installBepInEx)
+        self.installThread.daemon = True
 
         self.modsListLabel = Gtk.Label()
         self.modsListLabel.set_text("Mods List (TODO)")
@@ -102,44 +111,84 @@ class MainWindow(Gtk.Window):
         self.gameDirectoryLabel.set_text(f"Full path to game directory: {cfg['gameDirectoryString']}")
         self.show_all()
 
-    def installBepInEx(self, widget):
-        install = False
-        while install is False: # need this here so break can happen if an error occurs before the dialog should be created
+    def startInstall(self, widget):
+        self.installThread.start()
 
-            # Error Checks. Each one will have an if true for development that can be removed later.
-
-            if os.path.isfile(f"{cfg['gameDirectoryString']}Contract Rush DX.exe"): # If the file exists continue, otherwise spawn an error dialog and skip the rest.
+    def installBepInEx(self):
+        # TODO: IMPLEMENT A PROGRESS BAR HERE
+        if os.path.isfile(f"{cfg['gameDirectoryString']}Contract Rush DX.exe"): # If the file exists continue, otherwise spawn an error dialog and skip the rest.
                 print("file exists test")
-            else:
-                error = ErrorDialog(self, 'executableNotFound')
-                errorRun = error.run()
-                error.destroy()
-                break # Skip the install and the function ends
+                result = requests.get("https://github.com/BepInEx/BepInEx/")
 
+                soup = BeautifulSoup(result.content, 'html.parser')
+                latestRelease = soup.find_all('span', class_='css-truncate css-truncate-target text-bold mr-2')
+                if latestRelease:
+                    for item in latestRelease:
+                        # print(f"Latest release: {item.get_text()}")
 
+                        # Now, use that to find the latest release of BepinEx and download it.
+                        versionData_A = re.search(r"((?:[0-9]+\.)+[0-9]+)", item.get_text())
+                        if versionData_A:
 
+                            downloadURL = f"https://github.com/BepinEx/BepinEx/releases/download/{"v" + str(versionData_A.group(1))}/BepinEx_win_x64_{str(versionData_A.group(1))}.zip"
+                            # print(f"Download URL: {downloadURL}")
 
+                            # print("Downloading latest release. This might take a moment.")
+                            download = requests.get(downloadURL, stream=True)
 
+                            with open("bepinex_latest.zip", "wb") as bpxZip:
+                                for chunk in download.iter_content(chunk_size=8192):
+                                    if chunk:
+                                        bpxZip.write(chunk)
+                            
+                            print("Download complete. File saved as bepinex_latest.zip.")
 
-            installerDialog = InstallerDialog(self)
-            runner = installerDialog.run()
-            installerDialog.destroy()
-            install = True
+                            # TODO: move file and extract it
 
-class InstallerDialog(Gtk.Dialog):
+                            manualConfig = ManualDialog(self)
+                            manualConfigRun = manualConfig.run()
+                            manualConfig.destroy()
+
+                        else:
+                            # print("Error! Regex Fail.")
+                            error = ErrorDialog(self, 'regexFailure')
+                            errorRun = error.run()
+                            error.destroy()
+                            self.destroy()
+                            
+                else:
+                    # print("Error! Could not find github repo for BepinEx. Something is going horribly wrong.")
+                    error = ErrorDialog(self, 'cannotFindBPXRepo')
+                    errorRun = error.run()
+                    error.destroy()
+        else:
+            error = ErrorDialog(self, 'executableNotFound')
+            errorRun = error.run()
+            error.destroy()
+
+class ManualDialog(Gtk.Dialog):
     def __init__(self, parent):
-        super().__init__(title="BepInEx Semi-Automated Installer", transient_for=parent, flags=0)
-        # self.add_buttons(Gtk.STOCK_OK, Gtk.ResponseType.OK)
-        self.set_default_size(150, 100)
-        self.inlabel = Gtk.Label(label="todo")
-        self.inbox = self.get_content_area()
-        self.inbox.add(self.inlabel)
+        super().__init__(title="Manual Configuration Required", transient_for=parent, flags=0)
+        self.add_buttons(Gtk.STOCK_OK, Gtk.ResponseType.OK)
+        self.set_default_size(200, 100)
+        self.errorLabel = Gtk.Label(label='todo')
+        self.errorLabel.set_line_wrap(True)
+        self.errorLabel.set_max_width_chars(64)
+        self.errorBox = self.get_content_area()
+        self.errorBox.add(self.errorLabel)
         self.show_all()
-        self.install(self)
-
-    def install(self):
-        print("THIS IS A PLACEHOLDER TEST")
-
+         
+class InfoDialog(Gtk.Dialog):
+    def __init__(self, parent, infoType):
+        super().__init__(title="INFORMATION", transient_for=parent, flags=0)
+        self.add_buttons(Gtk.STOCK_OK, Gtk.ResponseType.OK)
+        self.set_default_size(200, 100)
+        self.errorLabel = Gtk.Label(label=errorMessages[infoType])
+        self.errorLabel.set_line_wrap(True)
+        self.errorLabel.set_max_width_chars(64)
+        self.errorBox = self.get_content_area()
+        self.errorBox.add(self.errorLabel)
+        self.show_all()
 
 # Dialog for displaying errors to user. Pass it an error type from errorMessages dict and it will display it.
 class ErrorDialog(Gtk.Dialog):
