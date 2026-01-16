@@ -20,8 +20,9 @@ def resetConfig(): # Function for resetting the config if it has an error or cre
 # Dict of error messages for the error popup
 global errorMessages
 errorMessages = {
-    "executableNotFound":"Game executable not found in provided game directory.",
-    "bpxNotInstalled":"BepInEx does not appear to be installed in provided game directory."
+    "executableNotFound":"Cannot find \"Contract Rush DX.exe\" in provided game directory! Install of BepInEx aborted.",
+    "bpxNotInstalled":"BepInEx does not appear to be installed in provided game directory.",
+    "directoryNotFound":"That directory does not exist! Please input a valid directory. Maybe you forgot an ending \"/\" or a capitalization?"
 }
 
 config = None
@@ -67,18 +68,18 @@ class MainWindow(Gtk.Window):
         self.outerBox.pack_start(self.modsBox, True, True, 0)
 
         self.gameDirectoryLabel = Gtk.Label()
-        self.gameDirectoryLabel.set_text(f"Game directory: {cfg['gameDirectoryString']}")
+        self.gameDirectoryLabel.set_text(f"Full path to game directory: {cfg['gameDirectoryString']}")
         self.gameDirectoryLabel.set_justify(Gtk.Justification.LEFT)
         self.directoryBox.pack_start(self.gameDirectoryLabel, True, True, 0)
 
         self.gameDirectorySelection = Gtk.Entry()
         self.directoryBox.pack_start(self.gameDirectorySelection, True, True, 0)
 
-        self.gameDirectoryEntryButton = Gtk.Button(label='Set Game directory')
+        self.gameDirectoryEntryButton = Gtk.Button(label='Set game directory')
         self.gameDirectoryEntryButton.connect("clicked", self.setGameDirectory)
         self.directoryBox.pack_start(self.gameDirectoryEntryButton, True, True, 0)
 
-        self.installScriptButton = Gtk.Button(label='Download & Install BepInEx')
+        self.installScriptButton = Gtk.Button(label='Download & install BepInEx')
         self.installScriptButton.connect("clicked", self.installBepInEx)
         self.modsBox.pack_start(self.installScriptButton, True, True, 0)
 
@@ -88,46 +89,70 @@ class MainWindow(Gtk.Window):
         self.modsBox.pack_start(self.modsListLabel, True, True, 0)
 
     def setGameDirectory(self, widget):
-        cfg['gameDirectoryString'] = self.gameDirectorySelection.get_text()
-        config = open('cfg.json', 'w')
-        json.dump(cfg, config)
-        config.close()
+        if os.path.isdir(self.gameDirectorySelection.get_text()):
+            cfg['gameDirectoryString'] = self.gameDirectorySelection.get_text()
+            config = open('cfg.json', 'w')
+            json.dump(cfg, config)
+            config.close()
+        else:
+            error = ErrorDialog(self, 'directoryNotFound')
+            errorRun = error.run()
+            error.destroy()
         
-        self.gameDirectoryLabel.set_text(f"Game directory: {cfg['gameDirectoryString']}")
+        self.gameDirectoryLabel.set_text(f"Full path to game directory: {cfg['gameDirectoryString']}")
         self.show_all()
 
     def installBepInEx(self, widget):
-        installerDialog = InstallerDialog(self)
-        runner = installerDialog.run()
-        if runner is Gtk.ResponseType.OK:
-            print("ok")
-        elif runner is Gtk.ResponseType.CANCEL:
-            print("cancel")
-        installerDialog.destroy()
+        install = False
+        while install is False: # need this here so break can happen if an error occurs before the dialog should be created
+
+            # Error Checks. Each one will have an if true for development that can be removed later.
+
+            if os.path.isfile(f"{cfg['gameDirectoryString']}Contract Rush DX.exe"): # If the file exists continue, otherwise spawn an error dialog and skip the rest.
+                print("file exists test")
+            else:
+                error = ErrorDialog(self, 'executableNotFound')
+                errorRun = error.run()
+                error.destroy()
+                break # Skip the install and the function ends
+
+
+
+
+
+
+            installerDialog = InstallerDialog(self)
+            runner = installerDialog.run()
+            installerDialog.destroy()
+            install = True
 
 class InstallerDialog(Gtk.Dialog):
-     def __init__(self, parent):
+    def __init__(self, parent):
         super().__init__(title="BepInEx Semi-Automated Installer", transient_for=parent, flags=0)
-        self.add_buttons(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, Gtk.STOCK_OK, Gtk.ResponseType.OK)
+        # self.add_buttons(Gtk.STOCK_OK, Gtk.ResponseType.OK)
         self.set_default_size(150, 100)
         self.inlabel = Gtk.Label(label="todo")
         self.inbox = self.get_content_area()
         self.inbox.add(self.inlabel)
         self.show_all()
+        self.install(self)
+
+    def install(self):
+        print("THIS IS A PLACEHOLDER TEST")
+
 
 # Dialog for displaying errors to user. Pass it an error type from errorMessages dict and it will display it.
 class ErrorDialog(Gtk.Dialog):
     def __init__(self, parent, errorType):
-        super().__init__(title="An Error has occured", transient_for=parent, flags=0)
+        super().__init__(title="ERROR", transient_for=parent, flags=0)
         self.add_buttons(Gtk.STOCK_OK, Gtk.ResponseType.OK)
-        self.set_default_size(150, 100)
+        self.set_default_size(200, 100)
         self.errorLabel = Gtk.Label(label=errorMessages[errorType])
+        self.errorLabel.set_line_wrap(True)
+        self.errorLabel.set_max_width_chars(64)
         self.errorBox = self.get_content_area()
         self.errorBox.add(self.errorLabel)
         self.show_all()
-
-def bepInExInstallScript():
-    print("THIS IS A PLACEHOLDER TEST")
 
 window = MainWindow()
 window.connect("destroy", Gtk.main_quit)
