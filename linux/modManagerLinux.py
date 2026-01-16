@@ -154,7 +154,6 @@ class MainWindow(Gtk.Window):
                             error = ErrorDialog(self, 'regexFailure')
                             errorRun = error.run()
                             error.destroy()
-                            self.destroy()
                             
                 else:
                     # print("Error! Could not find github repo for BepinEx. Something is going horribly wrong.")
