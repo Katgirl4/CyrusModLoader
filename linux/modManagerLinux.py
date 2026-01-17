@@ -27,8 +27,10 @@ errorMessages = {
     "regexFailure":"RegEx that should always match failed to match!",
     "cannotFindBPXRepo":"GET request to github.com failed!"
 }
+
+global infoMessages
 infoMessages = {
-    "automaticInstallComplete":"askdjhbsajbdajsd"
+    "automaticInstallComplete":"All automated install steps possible have been completed. Some manual configuration is required."
 }
 
 config = None
