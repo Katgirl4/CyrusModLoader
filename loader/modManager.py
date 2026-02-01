@@ -3,6 +3,7 @@ from bs4 import *
 
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
+from gi.repository import Gdk
 
 # Open config file when application starts.
     # If config is found, open it. If config is not found, then create a new file and try to open it. (TODO: make it fill blank fields)
@@ -15,7 +16,9 @@ def resetConfig(): # Function for resetting the config if it has an error or cre
     
     json.dump({
     'gameDirectoryString' : '~/',
-    'disableDirectoryString' : '~/Disabled/'}, config, indent=4)
+    'windowHeight': 800,
+    'windowWidth': 1200
+    }, config, indent=4)
     config.close()
 
 # Dict of error messages for the error popup
@@ -52,6 +55,7 @@ while not cfg: # Get the config file and reset it if it has errors
         cfg = json.load(config)
         config.close()
 
+cssFile = open("style.css", 'r').read()
 
 # Main (and only) window (probably).
 class MainWindow(Gtk.Window):
@@ -60,7 +64,13 @@ class MainWindow(Gtk.Window):
         
         super().__init__(title="CyrusModManager")
         self.set_border_width(5)
-        self.set_default_size(400,300)
+        self.set_default_size(cfg['windowWidth'],cfg['windowHeight'])
+
+        self.CSSProvider = Gtk.CssProvider()
+        self.CSSProvider.load_from_data(cssFile)
+        self.context = Gtk.StyleContext()
+        self.screen = Gdk.Screen.get_default()
+        self.context.add_provider_for_screen(self.screen, self.CSSProvider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
 
         self.outerBox = Gtk.HBox(orientation=Gtk.Orientation.VERTICAL, spacing=6)
     
@@ -85,6 +95,7 @@ class MainWindow(Gtk.Window):
 
         self.gameDirectoryEntryButton = Gtk.Button(label='Set game directory')
         self.gameDirectoryEntryButton.connect("clicked", self.setGameDirectory)
+        self.gameDirectoryEntryButton.set_name("gameDirectoryEntryButton")
         self.directoryBox.pack_start(self.gameDirectoryEntryButton, True, True, 0)
 
         self.installScriptButton = Gtk.Button(label='Download & install BepInEx')
@@ -171,7 +182,12 @@ class ManualDialog(Gtk.Dialog):
     def __init__(self, parent):
         super().__init__(title="Manual Configuration Required", transient_for=parent, flags=0)
         self.add_buttons(Gtk.STOCK_OK, Gtk.ResponseType.OK)
-        self.set_default_size(200, 100)
+        self.set_default_size(cfg['windowWidth']/2, cfg['windowHeight']/2)
+        self.CSSProvider = Gtk.CssProvider()
+        self.CSSProvider.load_from_data(cssFile)
+        self.context = Gtk.StyleContext()
+        self.screen = Gdk.Screen.get_default()
+        self.context.add_provider_for_screen(self.screen, self.CSSProvider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
         self.errorLabel = Gtk.Label(label='todo')
         self.errorLabel.set_line_wrap(True)
         self.errorLabel.set_max_width_chars(64)
@@ -183,7 +199,12 @@ class InfoDialog(Gtk.Dialog):
     def __init__(self, parent, infoType):
         super().__init__(title="INFORMATION", transient_for=parent, flags=0)
         self.add_buttons(Gtk.STOCK_OK, Gtk.ResponseType.OK)
-        self.set_default_size(200, 100)
+        self.set_default_size(cfg['windowWidth']/2, cfg['windowHeight']/2)
+        self.CSSProvider = Gtk.CssProvider()
+        self.CSSProvider.load_from_data(cssFile)
+        self.context = Gtk.StyleContext()
+        self.screen = Gdk.Screen.get_default()
+        self.context.add_provider_for_screen(self.screen, self.CSSProvider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
         self.errorLabel = Gtk.Label(label=errorMessages[infoType])
         self.errorLabel.set_line_wrap(True)
         self.errorLabel.set_max_width_chars(64)
@@ -196,12 +217,19 @@ class ErrorDialog(Gtk.Dialog):
     def __init__(self, parent, errorType):
         super().__init__(title="ERROR", transient_for=parent, flags=0)
         self.add_buttons(Gtk.STOCK_OK, Gtk.ResponseType.OK)
-        self.set_default_size(200, 100)
+        self.set_default_size(cfg['windowWidth']/2, cfg['windowHeight']/2)
+        self.CSSProvider = Gtk.CssProvider()
+        self.CSSProvider.load_from_data(cssFile)
+        self.context = Gtk.StyleContext()
+        self.screen = Gdk.Screen.get_default()
+        self.context.add_provider_for_screen(self.screen, self.CSSProvider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
         self.errorLabel = Gtk.Label(label=errorMessages[errorType])
         self.errorLabel.set_line_wrap(True)
         self.errorLabel.set_max_width_chars(64)
+        self.errorLabel.set_name("errorLabel")
         self.errorBox = self.get_content_area()
         self.errorBox.add(self.errorLabel)
+        self.errorBox.set_name("errorBox")
         self.show_all()
 
 window = MainWindow()

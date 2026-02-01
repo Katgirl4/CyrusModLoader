@@ -1,0 +1,12 @@
+#gameDirectoryEntryButton {
+    background-color: #778899;
+    color: #F0FFFF;
+    font-size: 50px;
+}
+#errorLabel {
+    color: #FFA500;
+    font-size: 30px;
+}
+#errorBox {
+    background-color: #800008;
+}
