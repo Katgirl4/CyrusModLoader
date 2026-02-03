@@ -143,7 +143,7 @@ class MainWindow(Gtk.Window):
                         versionData_A = re.search(r"((?:[0-9]+\.)+[0-9]+)", item.get_text())
                         if versionData_A:
 
-                            downloadURL = f"https://github.com/BepinEx/BepinEx/releases/download/{"v" + str(versionData_A.group(1))}/BepinEx_linux_x64_{str(versionData_A.group(1))}.zip"
+                            downloadURL = f"https://github.com/BepinEx/BepinEx/releases/download/{"v" + str(versionData_A.group(1))}/BepInEx_linux_x64_{str(versionData_A.group(1))}.zip"
                             # print(f"Download URL: {downloadURL}")
 
                             # print("Downloading latest release. This might take a moment.")
