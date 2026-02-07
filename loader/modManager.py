@@ -16,8 +16,8 @@ def resetConfig(): # Function for resetting the config if it has an error or cre
     
     json.dump({
     'gameDirectoryString' : '~/',
-    'windowHeight': 800,
-    'windowWidth': 1200
+    'windowHeight': 400,
+    'windowWidth': 600
     }, config, indent=4)
     config.close()
 
