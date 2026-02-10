@@ -4,9 +4,15 @@
     font-size: 50px;
 }
 #errorLabel {
-    color: #FFA500;
+    color: #ff2727;
     font-size: 30px;
+    text-shadow: #778899;
 }
 #errorBox {
-    background-color: #800008;
+    background-color: #000000;
+    background-image: url('../assets/loader/CMLError.gif');
+    background-size: cover;
+    background-repeat: repeat;
+    background-position: center center;
+    margin: 0;
 }
