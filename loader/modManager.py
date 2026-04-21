@@ -1,4 +1,4 @@
-import json, gi, sys, os, subprocess, re, requests, string, time, threading
+import json, gi, sys, os, subprocess, re, requests, string, time, threading,
 from bs4 import *
 
 gi.require_version('Gtk', '3.0')
