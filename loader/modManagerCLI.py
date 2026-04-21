@@ -1,4 +1,4 @@
-import json, sys, os, subprocess, re, requests, string, time, threading
+import json, sys, os, subprocess, re, requests, string, time, threading, climage
 from colorama import *
 from bs4 import *
 
@@ -99,6 +99,7 @@ def install():
     pass
 
 def main():
+    print(climage.convert('../assets/loader/CMLLogo.png', width=40))
     printMessage("CyrusModLoader command line tool release NULL", "info")
     printMessage("Type \"help\" for a list of commands.", "info")
     global config
