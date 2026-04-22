@@ -2,8 +2,7 @@ import json, sys, os, subprocess, re, requests, string, time, threading, climage
 from colorama import *
 from bs4 import *
 
-# Open config file when application starts.
-    # If config is found, open it. If config is not found, then create a new file and try to open it. (TODO: make it fill blank fields)
+
 
 global config
 global cfg
@@ -102,9 +101,14 @@ def main():
     print(climage.convert('../assets/loader/CMLLogo.png', width=40))
     printMessage("CyrusModLoader command line tool release NULL", "info")
     printMessage("Type \"help\" for a list of commands.", "info")
+
+    # Open config file when application starts.
+    # If config is found, open it. If config is not found, then create a new file and try to open it. 
+    # (TODO: make it fill blank fields, add messages to notify user of malformed or missing config and if the script reset them)
     global config
     global cfg
     config, cfg = getConfig()
+
     checkGameExists()
     checkFolderModsExist()
     checkFolderDisabledExist()
